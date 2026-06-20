@@ -2516,6 +2516,7 @@ function buildIBPPRSheet(payload) {
 const generateModal = (() => {
   let _docHTML  = null;
   let _baseName = 'dokumen';
+  let _uploadPulseTimer = null; // [BARU] interval animasi progress saat menunggu upload spreadsheet
 
   const STEPS_IBPPR = [
     'Validasi data form…',
@@ -2554,8 +2555,56 @@ const generateModal = (() => {
     }, 160);
   }
 
+  // [BARU] openUploading: tampilkan overlay SEGERA saat mulai mengirim data
+  // ke spreadsheet (sebelum await selesai), supaya tidak ada jeda "layar
+  // kosong" antara modal konfirmasi "Ya, Update" tertutup dan modal generate
+  // PDF terbuka. Progress bar berdenyut (indeterminate) karena durasi proses
+  // sebenarnya tidak diketahui — beda dengan open() yang animasinya
+  // bertahap/simulatif karena dokumennya sudah pasti siap.
+  function openUploading(modulLabel) {
+    stopUploadingPulse();
+    document.getElementById('gen-title').textContent      = 'Mengunggah…';
+    document.getElementById('gen-subtitle').textContent   = 'Menyimpan data ke spreadsheet JSA LOG';
+    const stepLabelEl = document.getElementById('gen-step-label');
+    if (stepLabelEl) { stepLabelEl.style.opacity = '1'; stepLabelEl.textContent = 'Mengirim data ke server…'; }
+    document.getElementById('gen-pct').textContent = '';
+    document.getElementById('gen-done-actions').style.display = 'none';
+    document.getElementById('gen-progress-wrap').style.display = 'block';
+    document.getElementById('gen-preview-wrap').style.display = 'none';
+
+    document.getElementById('gen-icon-bolt').style.display  = '';
+    document.getElementById('gen-icon-check').style.display = 'none';
+    document.getElementById('gen-icon-wrap').style.background = 'var(--amber-soft)';
+
+    const overlay = document.getElementById('generate-overlay');
+    const box     = document.getElementById('generate-box');
+    overlay.style.display = 'flex';
+    requestAnimationFrame(() => {
+      box.style.transform = 'scale(1)';
+      box.style.opacity   = '1';
+    });
+
+    const bar = document.getElementById('gen-progress-bar');
+    bar.style.transition = 'width 0.9s ease-in-out';
+    let pct = 14, dir = 1;
+    bar.style.width = pct + '%';
+    _uploadPulseTimer = setInterval(() => {
+      pct += dir * 16;
+      if (pct >= 80) { pct = 80; dir = -1; }
+      if (pct <= 14) { pct = 14; dir = 1; }
+      bar.style.width = pct + '%';
+    }, 650);
+  }
+
+  function stopUploadingPulse() {
+    if (_uploadPulseTimer) { clearInterval(_uploadPulseTimer); _uploadPulseTimer = null; }
+    const bar = document.getElementById('gen-progress-bar');
+    if (bar) bar.style.transition = 'width 0.4s ease';
+  }
+
   let _modulLabel = '';
   function open(modulLabel, filename, docHTML) {
+    stopUploadingPulse(); // [BARU] pastikan animasi denyut upload dihentikan sebelum animasi generate dimulai
     _baseName = (filename || 'dokumen.pdf').replace(/\.(pdf|html)$/i, '');
     _docHTML  = docHTML || null;
     _modulLabel = modulLabel || '';
@@ -2630,6 +2679,7 @@ const generateModal = (() => {
 
   return {
     open,
+    openUploading, // [BARU] dipanggil sebelum await upload ke spreadsheet
     // ── Helper: render elemen ke canvas (100% dari template multi-halaman) ──
     async _renderEl(el, scale, cloneSetup) {
       return window.html2canvas(el, {
@@ -2821,6 +2871,7 @@ const generateModal = (() => {
       }
     },
     close() {
+      stopUploadingPulse(); // [BARU] jaga-jaga jika modal ditutup saat masih dalam fase upload
       const box     = document.getElementById('generate-box');
       const overlay = document.getElementById('generate-overlay');
       box.style.transform = 'scale(0.92)';
@@ -2996,6 +3047,9 @@ jsa.generate = function() {
   const filename = 'JSA-' + (h.noJSA || 'baru').replace(/\//g,'-') + '.pdf';
   jsaLogConfirm.show(async (updateLog) => {
     if (updateLog) {
+      // [BARU] tampilkan overlay loading SEGERA (sebelum await) supaya
+      // layar tidak kosong/diam selama proses simpan ke spreadsheet.
+      generateModal.openUploading('JSA');
       // [BARU] tunggu hasil simpan yang sebenarnya dari server (upsert),
       // lalu tampilkan toast sesuai hasil nyata — bukan asumsi selalu berhasil
       const result = await jsaLog.addEntry({
