@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>SiKerja — IBPPR & JSA</title>
+<title>SiKerja - IBPPR & JSA</title>
 
 <!--
   =========================================================================
@@ -35,7 +35,7 @@
 <style>
 /* =========================================================================
    DESIGN TOKENS
-   Tema: instrumen keselamatan kerja lapangan — graphite/steel + amber
+   Tema: instrumen keselamatan kerja lapangan - graphite/steel + amber
    peringatan + hijau aman / merah bahaya yang dipetakan langsung ke
    tingkat resiko aktual (bukan dekorasi).
    ========================================================================= */
@@ -122,7 +122,7 @@ input,select,textarea{ font-family: inherit; }
 }
 
 /* =========================================================================
-   APP SHELL — top bar tetap, area konten scroll, tab navigasi bawah
+   APP SHELL - top bar tetap, area konten scroll, tab navigasi bawah
    (pola aplikasi mobile native, bukan dokumen/spreadsheet)
    ========================================================================= */
 .app-shell{
@@ -270,7 +270,7 @@ input,select,textarea{ font-family: inherit; }
 }
 
 /* =========================================================================
-   KOMPONEN UMUM — section header, card, badge, tombol
+   KOMPONEN UMUM - section header, card, badge, tombol
    ========================================================================= */
 .section-head{
   margin: 4px 0 14px;
@@ -642,7 +642,7 @@ input,select,textarea{ font-family: inherit; }
       <div class="section-head">
         <div class="eyebrow">Modul 2</div>
         <h1>JSA</h1>
-        <p class="desc">Job Safety Analysis — analisa keselamatan tiap urutan pekerjaan</p>
+        <p class="desc">Job Safety Analysis - analisa keselamatan tiap urutan pekerjaan</p>
       </div>
 
       <!-- Header Dokumen JSA -->
@@ -746,7 +746,7 @@ input,select,textarea{ font-family: inherit; }
             <!-- resiko: tingkat resiko keseluruhan JSA, masuk ke JSA LOG -->
             <label>Tingkat Resiko <span class="req">*</span></label>
             <select id="jsa-resiko">
-              <option value="">— Pilih —</option>
+              <option value="">- Pilih -</option>
               <option value="Rendah">Rendah</option>
               <option value="Sedang">Sedang</option>
               <option value="Tinggi">Tinggi</option>
@@ -783,7 +783,7 @@ input,select,textarea{ font-family: inherit; }
 
     <!-- ===================================================================
          MODUL 3: JSA LOG
-         Bukan form input — merupakan riwayat/arsip semua JSA yang pernah
+         Bukan form input - merupakan riwayat/arsip semua JSA yang pernah
          disimpan. Data header JSA otomatis masuk ke sini saat JSA disimpan.
          Field (sesuai sheet asli, tanpa kolom ID tersembunyi):
                 no (A), noFormJSA (B), tanggal (C), resiko (D),
@@ -979,7 +979,7 @@ input,select,textarea{ font-family: inherit; }
           <span id="gen-pct" style="font-family:var(--font-mono);font-size:11.5px;color:var(--ink-faint);font-weight:600;flex-shrink:0">0%</span>
         </div>
       </div>
-      <!-- Pratinjau dokumen hasil — iframe menampilkan tabel resmi yang sudah terisi data -->
+      <!-- Pratinjau dokumen hasil - iframe menampilkan tabel resmi yang sudah terisi data -->
       <div id="gen-preview-wrap" style="display:none;margin-bottom:16px">
         <div style="font-size:11.5px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;display:flex;align-items:center;gap:6px">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:13px;height:13px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -1077,7 +1077,7 @@ input,select,textarea{ font-family: inherit; }
 <input type="file" id="draft-file-input" accept=".json" style="display:none" onchange="loadDraftFile(event)">
 
 <!-- =========================================================================
-     JAVASCRIPT — semua logic dalam satu blok script
+     JAVASCRIPT - semua logic dalam satu blok script
      Struktur:
        1. switchTab()        – navigasi antar modul
        2. showToast()        – notifikasi singkat
@@ -1096,7 +1096,7 @@ input,select,textarea{ font-family: inherit; }
 'use strict';
 
 /* -------------------------------------------------------------------------
-   AUTO-RESIZE TEXTAREA — tinggi menyesuaikan isi, tanpa scroll
+   AUTO-RESIZE TEXTAREA - tinggi menyesuaikan isi, tanpa scroll
    ------------------------------------------------------------------------- */
 function autoResize(el) {
   el.style.height = 'auto';
@@ -1182,7 +1182,7 @@ const confirmDialog = (() => {
 })();
 
 /* -------------------------------------------------------------------------
-   DOC META DIALOG — popup edit No. Dok / No. Rev / Tgl Terbit
+   DOC META DIALOG - popup edit No. Dok / No. Rev / Tgl Terbit
    Mengubah DOC_META global yang dipakai semua sheet PDF (IBPPR, JSA, LOG)
    ------------------------------------------------------------------------- */
 const docMetaDialog = (() => {
@@ -1221,7 +1221,7 @@ const docMetaDialog = (() => {
     renderTopbar();
     hide();
     try { session.save(); } catch(e) {}
-    showToast('✓ Info dokumen diperbarui — otomatis berlaku di PDF berikutnya');
+    showToast('✓ Info dokumen diperbarui - otomatis berlaku di PDF berikutnya');
   }
 
   function cancel() { hide(); }
@@ -1231,7 +1231,7 @@ const docMetaDialog = (() => {
 
 
 /* -------------------------------------------------------------------------
-   DIALOG NAMA PELAKSANA — popup input per-baris, tanpa batas jumlah
+   DIALOG NAMA PELAKSANA - popup input per-baris, tanpa batas jumlah
    ------------------------------------------------------------------------- */
 const pelaksanaDialog = (() => {
   const overlay = () => document.getElementById('pelaksana-overlay');
@@ -1368,7 +1368,7 @@ const pelaksanaDialog = (() => {
 
 
 /* -------------------------------------------------------------------------
-   SYNC PREVIEW NAMA PELAKSANA — dipanggil setelah load draft / session restore
+   SYNC PREVIEW NAMA PELAKSANA - dipanggil setelah load draft / session restore
    ------------------------------------------------------------------------- */
 function syncPelaksanaPreview() {
   const hidden  = document.getElementById('jsa-namaPelaksana');
@@ -1456,7 +1456,7 @@ const ibppr = (() => {
   let rows = [];
   let nextId = 1;
 
-  // Tidak ada data dummy — IBPPR mulai dari kosong
+  // Tidak ada data dummy - IBPPR mulai dari kosong
 
   // Buat elemen card untuk satu baris IBPPR
   function createRowEl(row) {
@@ -1507,7 +1507,7 @@ const ibppr = (() => {
               <!-- paparan: tingkat keparahan/dampak bahaya, bukan frekuensi waktu (1-5, col G) -->
               <label>Paparan (1–5) <span class="req">*</span></label>
               <select oninput="ibppr.updatePenilaian(${row.id},'paparan',this.value)">
-                <option value="">—</option>
+                <option value="">-</option>
                 ${[1,2,3,4,5].map(n=>`<option value="${n}" ${row.paparan==n?'selected':''}>${n} – ${['Sangat Ringan','Ringan','Sedang','Berat','Sangat Fatal'][n-1]}</option>`).join('')}
               </select>
             </div>
@@ -1515,7 +1515,7 @@ const ibppr = (() => {
               <!-- peluang: kemungkinan kejadian bahaya (1-5, col H) -->
               <label>Peluang (1–5) <span class="req">*</span></label>
               <select oninput="ibppr.updatePenilaian(${row.id},'peluang',this.value)">
-                <option value="">—</option>
+                <option value="">-</option>
                 ${[1,2,3,4,5].map(n=>`<option value="${n}" ${row.peluang==n?'selected':''}>${n} – ${['Hampir mustahil','Jarang terjadi','Mungkin','Kemungkinan besar','Hampir pasti'][n-1]}</option>`).join('')}
               </select>
             </div>
@@ -1579,7 +1579,7 @@ const ibppr = (() => {
       const r = rows.find(r => r.id === id);
       if (!r) return;
       r[field] = val;
-      // hitung ulang nilai (Paparan × Peluang — akibat kini teks bebas)
+      // hitung ulang nilai (Paparan × Peluang - akibat kini teks bebas)
       const nilai = parseInt(r.paparan||0) * parseInt(r.peluang||0);
       document.getElementById('ibppr-risk-' + id).innerHTML = riskChip(nilai);
     },
@@ -1643,7 +1643,7 @@ const jsa = (() => {
   let steps = [];
   let nextId = 1;
 
-  // Tidak ada data dummy — JSA mulai dari kosong
+  // Tidak ada data dummy - JSA mulai dari kosong
 
   function createStepEl(step) {
     const el = document.createElement('div');
@@ -1814,7 +1814,7 @@ const jsa = (() => {
    ========================================================================= */
 const jsaLog = (() => {
 
-  // Tidak ada data dummy — JSA LOG mulai dari kosong
+  // Tidak ada data dummy - JSA LOG mulai dari kosong
   let entries = [];
   let filteredEntries = [...entries];
 
@@ -1845,7 +1845,7 @@ const jsaLog = (() => {
     }
     empty.style.display = 'none';
     container.innerHTML = list.map(e => `
-      <!-- Kartu JSA LOG — satu baris sheet "JSA LOG" per kartu -->
+      <!-- Kartu JSA LOG - satu baris sheet "JSA LOG" per kartu -->
       <div class="card" style="margin-bottom:10px;cursor:pointer;transition:box-shadow 0.15s,transform 0.12s"
         onclick="jsaLog.showDetail('${String(e.id).replace(/'/g, "\\'")}')"
         onmouseover="this.style.boxShadow='var(--shadow-pop)'"
@@ -1899,7 +1899,7 @@ const jsaLog = (() => {
         }
         // data dari sheet diurutkan lama→baru (No urut), tampilkan terbaru di atas
         entries = (res.data || []).slice().reverse();
-        // [BARU] JSA Log selalu refer ke spreadsheet — terapkan ulang
+        // [BARU] JSA Log selalu refer ke spreadsheet - terapkan ulang
         // filter/pencarian yang sedang aktif di atas data terbaru ini
         this.filter();
       } catch (err) {
@@ -1914,9 +1914,9 @@ const jsaLog = (() => {
         if (refreshIcon) refreshIcon.classList.remove('log-refresh-spinning');
       }
     },
-    // addEntry: kirim data ke server (upsert — backend otomatis update
+    // addEntry: kirim data ke server (upsert - backend otomatis update
     // kalau No. Form JSA sudah ada, atau tambah baris baru kalau belum).
-    // [BARU] tidak pernah lagi menyisipkan data secara lokal/optimis —
+    // [BARU] tidak pernah lagi menyisipkan data secara lokal/optimis -
     // JSA Log SELALU mengambil ulang dari spreadsheet setelah berhasil
     // simpan, supaya tampilan di web selalu cerminan persis isi sheet.
     // Return: { success, updated, id, error } supaya pemanggil tahu hasil
@@ -1927,7 +1927,7 @@ const jsaLog = (() => {
         const res = await apiCall('add', { payload: summary });
         if (res && res.success) {
           // simpan payload lengkap (detail langkah/APD) di cache lokal,
-          // di-keyed dengan id stabil (= No. Form JSA) — aman dipakai
+          // di-keyed dengan id stabil (= No. Form JSA) - aman dipakai
           // lintas reload karena id sekarang bukan lagi UUID acak
           if (_payload && res.id) {
             this._detailMap = this._detailMap || {};
@@ -2082,9 +2082,9 @@ const jsaLog = (() => {
 
 
 /* =========================================================================
-   INTEGRASI GOOGLE APPS SCRIPT — REST API (GET list / POST action)
+   INTEGRASI GOOGLE APPS SCRIPT - REST API (GET list / POST action)
    Catatan penting: gunakan Content-Type 'text/plain' (bukan 'application/json')
-   pada request POST agar browser TIDAK mengirim preflight OPTIONS — Apps
+   pada request POST agar browser TIDAK mengirim preflight OPTIONS - Apps
    Script Web App tidak menangani OPTIONS sehingga preflight selalu gagal
    dengan CORS error. doPost() di Apps Script tetap bisa JSON.parse() body-nya
    dengan normal karena isinya tetap string JSON valid.
@@ -2108,7 +2108,7 @@ async function apiCall(action, data) {
 }
 
 /* =========================================================================
-   INTEGRASI GOOGLE APPS SCRIPT (placeholder — aktifkan saat deploy)
+   INTEGRASI GOOGLE APPS SCRIPT (placeholder - aktifkan saat deploy)
    ========================================================================= */
 async function submitToAppsScript(url, payload) {
   if (!url) { console.log('[GAS] URL belum diset, payload:', payload); return; }
@@ -2131,7 +2131,7 @@ async function submitToAppsScript(url, payload) {
 
 
 /* =========================================================================
-   SIMPAN DRAFT — download JSON untuk load otomatis nanti
+   SIMPAN DRAFT - download JSON untuk load otomatis nanti
    ========================================================================= */
 function downloadJSON(filename, data) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/octet-stream' });
@@ -2201,8 +2201,8 @@ const jsaLogConfirm = (() => {
 })();
 
 /* =========================================================================
-   TEMPLATE DOKUMEN — mengisi data form ke dalam struktur tabel resmi
-   (acuan: index.html — sheet "JSA LOG", "JSA", "IBPPR").
+   TEMPLATE DOKUMEN - mengisi data form ke dalam struktur tabel resmi
+   (acuan: index.html - sheet "JSA LOG", "JSA", "IBPPR").
    Struktur tabel & label dipertahankan persis seperti template; hanya
    sel-sel data yang diisi dari payload masing-masing modul. Jumlah baris
    tabel menyesuaikan jumlah data (bukan jumlah baris tetap), sehingga
@@ -2260,7 +2260,7 @@ function wrapStandaloneDoc(title, bodyHTML) {
 }
 
 // wrapSheetPage: bungkus satu tabel sheet ke dalam div .page-portrait / .page-landscape
-// — struktur ini PERSIS mengikuti TEMPLATE_MULTI_HALAMAN_3_SHEET_PDF.html, supaya
+// - struktur ini PERSIS mengikuti TEMPLATE_MULTI_HALAMAN_3_SHEET_PDF.html, supaya
 // downloadPDF() (logika row-by-row page-breaking) bisa mengukur & memotong tabel
 // dengan cara yang sama seperti pada template aslinya.
 function wrapSheetPage(sheetTitle, orientation, tableHTML) {
@@ -2272,7 +2272,7 @@ function wrapSheetPage(sheetTitle, orientation, tableHTML) {
   </div>`;
 }
 
-// ---- Sheet: JSA LOG  (struktur tabel 100% dari template — A4 Landscape) ----
+// ---- Sheet: JSA LOG  (struktur tabel 100% dari template - A4 Landscape) ----
 function buildJSALogSheet(entries) {
   const list = entries && entries.length ? entries : [{}];
   const rows = list.map((e, i) => `
@@ -2345,7 +2345,7 @@ function buildJSALogSheet(entries) {
   return wrapSheetPage('JSA LOG', 'landscape', table);
 }
 
-// ---- Sheet: JSA  (struktur tabel 100% dari template — A4 Portrait) ----
+// ---- Sheet: JSA  (struktur tabel 100% dari template - A4 Portrait) ----
 function buildJSASheet(payload) {
   const h = payload.header || {};
   const langkah = (payload.langkah && payload.langkah.length) ? payload.langkah : [{}];
@@ -2474,7 +2474,7 @@ function buildJSASheet(payload) {
   return wrapSheetPage('JSA', 'portrait', table);
 }
 
-// ---- Sheet: IBPPR  (struktur tabel 100% dari template — A4 Landscape) ----
+// ---- Sheet: IBPPR  (struktur tabel 100% dari template - A4 Landscape) ----
 function buildIBPPRSheet(payload) {
   const h = payload.header || {};
   const baris = (payload.baris && payload.baris.length) ? payload.baris : [{}];
@@ -2608,7 +2608,7 @@ const generateModal = (() => {
   ];
 
   // setStepLabel: ganti teks satu baris #gen-step-label dengan transisi
-  // fade halus (fade-out singkat, ganti teks, fade-in) — menggantikan
+  // fade halus (fade-out singkat, ganti teks, fade-in) - menggantikan
   // pendekatan lama yang menumpuk seluruh step sebagai daftar checklist.
   function setStepLabel(text) {
     const el = document.getElementById('gen-step-label');
@@ -2624,7 +2624,7 @@ const generateModal = (() => {
   // ke spreadsheet (sebelum await selesai), supaya tidak ada jeda "layar
   // kosong" antara modal konfirmasi "Ya, Update" tertutup dan modal generate
   // PDF terbuka. Progress bar berdenyut (indeterminate) karena durasi proses
-  // sebenarnya tidak diketahui — beda dengan open() yang animasinya
+  // sebenarnya tidak diketahui - beda dengan open() yang animasinya
   // bertahap/simulatif karena dokumennya sudah pasti siap.
   function openUploading(modulLabel) {
     stopUploadingPulse();
@@ -2714,7 +2714,7 @@ const generateModal = (() => {
     const bar = document.getElementById('gen-progress-bar');
     // [DIUBAH] reset ke 0% tanpa transisi (instan) tepat sebelum fase baru
     // dimulai, supaya tidak terlihat sebagai animasi "mundur" yang sempat
-    // terlihat oleh mata — bar baru "muncul" kosong lalu langsung maju lagi.
+    // terlihat oleh mata - bar baru "muncul" kosong lalu langsung maju lagi.
     bar.style.transition = 'none';
     bar.style.width = '0%';
     // force reflow supaya transition:none benar-benar diterapkan dulu
@@ -2746,7 +2746,7 @@ const generateModal = (() => {
       box.style.opacity   = '1';
     });
 
-    // simulasi progres bertahap (proses sesungguhnya — penyusunan tabel —
+    // simulasi progres bertahap (proses sesungguhnya - penyusunan tabel -
     // sudah selesai sebelum modal dibuka; ini hanya animasi UX)
     let step = 0;
     const total = steps.length;
@@ -2802,11 +2802,11 @@ const generateModal = (() => {
     // ── downloadPDF: logika penentuan halaman 100% IDENTIK dengan
     // TEMPLATE_MULTI_HALAMAN_3_SHEET_PDF.html → fungsi downloadPDF(tabName):
     //  1. Ukur dulu (di DOM asli, dalam px CSS) posisi top/bottom tiap baris
-    //     <tr> tbody SEBELUM capture — supaya pemotongan halaman PDF tidak
+    //     <tr> tbody SEBELUM capture - supaya pemotongan halaman PDF tidak
     //     pernah jatuh di tengah baris.
     //  2. Blok tanda tangan (ttd-label → ttd-space → ttd-name → ttd-jabatan)
     //     digabung jadi SATU blok utuh yang tidak pernah dipotong, sama
-    //     seperti template (boleh sendirian di halaman baru — tidak ada
+    //     seperti template (boleh sendirian di halaman baru - tidak ada
     //     simulasi/forced-break tambahan seperti pada versi sebelumnya).
     //  3. Render SELURUH <table> jadi satu canvas (html2canvas, scale 2.5).
     //  4. Tentukan batas tiap halaman dengan loop while: isi halaman selama
@@ -2844,7 +2844,7 @@ const generateModal = (() => {
           const pageEl = pages[pageIdx];
           const isLandscape = pageEl.classList.contains('page-landscape');
 
-          // Config per sheet (mm) — identik dengan config template
+          // Config per sheet (mm) - identik dengan config template
           const cfg = {
             orient: isLandscape ? 'landscape' : 'portrait',
             pageW:  isLandscape ? 297 : 210,
@@ -3009,7 +3009,7 @@ ibppr.loadDraft = function(draft) {
     if (el && h[f] !== undefined) el.value = h[f];
   });
   if (draft.baris && draft.baris.length) {
-    // akses rows via closure tidak langsung — re-init dengan data draft
+    // akses rows via closure tidak langsung - re-init dengan data draft
     // lewat reset + addRow pattern dengan data
     // simpan ke ibppr._draftRows lalu trigger re-render
     this._pendingDraftRows = draft.baris;
@@ -3032,7 +3032,7 @@ ibppr._applyDraftRows = function() {
   this._loadRowsFromDraft(baris);
 };
 
-// Kita perlu akses internal rows — ini adalah tambahan fungsi init khusus draft
+// Kita perlu akses internal rows - ini adalah tambahan fungsi init khusus draft
 ibppr._loadRowsFromDraft = function(baris) {
   // approach: panggil ibppr.init() tapi ganti rows dengan data draft
   // kita tambahkan flag _draftData ke ibppr
@@ -3041,7 +3041,7 @@ ibppr._loadRowsFromDraft = function(baris) {
 };
 
 /* =========================================================================
-   VALIDASI FORM — tandai field kosong dengan border merah + scroll otomatis
+   VALIDASI FORM - tandai field kosong dengan border merah + scroll otomatis
    ========================================================================= */
 function markFieldError(el, markEl) {
   const target = markEl || el;
@@ -3193,7 +3193,7 @@ jsa.generate = function() {
       // layar tidak kosong/diam selama proses simpan ke spreadsheet.
       generateModal.openUploading('JSA');
       // [BARU] tunggu hasil simpan yang sebenarnya dari server (upsert),
-      // lalu tampilkan toast sesuai hasil nyata — bukan asumsi selalu berhasil
+      // lalu tampilkan toast sesuai hasil nyata - bukan asumsi selalu berhasil
       const result = await jsaLog.addEntry({
         noFormJSA:       h.noJSA,
         tanggal:         h.tanggal,
@@ -3210,7 +3210,7 @@ jsa.generate = function() {
       }
     }
     // Susun dokumen sungguhan: data form diisi ke struktur tabel resmi sheet JSA.
-    // PDF JSA selalu hanya berisi sheet JSA — sama saja isinya baik pilih
+    // PDF JSA selalu hanya berisi sheet JSA - sama saja isinya baik pilih
     // "Ya, Update" maupun "Tidak, Skip". Sheet JSA LOG punya dokumen &
     // tombol download terpisah sendiri di tab JSA Log (lihat jsaLog.generate()).
     const bodyHTML = buildJSASheet(payload);
@@ -3221,7 +3221,7 @@ jsa.generate = function() {
 
 
 /* =========================================================================
-   SESSION PERSISTENCE — simpan & restore semua state saat refresh
+   SESSION PERSISTENCE - simpan & restore semua state saat refresh
    Menggunakan sessionStorage (bertahan selama tab browser terbuka).
    ========================================================================= */
 const session = (() => {
@@ -3328,7 +3328,7 @@ document.addEventListener('DOMContentLoaded', () => {
   jsaLog.init();
   setTimeout(initTextareaHeights, 100);
 
-  // Hook _initFromDraft untuk IBPPR — dijalankan setelah init normal
+  // Hook _initFromDraft untuk IBPPR - dijalankan setelah init normal
   ibppr._initFromDraft = function() {
     const baris = this._draftData || [];
     if (!baris.length) return;
