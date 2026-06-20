@@ -458,6 +458,9 @@ input,select,textarea{ font-family: inherit; }
 .btn-danger-ghost:hover{ background: var(--risk-extreme-bg); }
 .btn-block{ width:100%; }
 .btn-sm{ padding: 7px 12px; font-size:12.5px; }
+/* [BARU] animasi putar untuk ikon tombol Refresh JSA Log saat memuat data */
+@keyframes log-refresh-spin{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
+.log-refresh-spinning{ animation: log-refresh-spin 0.8s linear infinite; }
 .btn:disabled{ opacity:0.45; cursor:not-allowed; }
 
 .fab-row{
@@ -775,15 +778,23 @@ input,select,textarea{ font-family: inherit; }
          MODUL 3: JSA LOG
          Bukan form input — merupakan riwayat/arsip semua JSA yang pernah
          disimpan. Data header JSA otomatis masuk ke sini saat JSA disimpan.
-         Field: no (B), noFormJSA (C), tanggal (D), resiko (E),
-                jenisPekerjaan (F), lokasi (G), penanggungjawab (H)
+         Field (sesuai sheet asli, tanpa kolom ID tersembunyi):
+                no (A), noFormJSA (B), tanggal (C), resiko (D),
+                jenisPekerjaan (E), lokasi (F), penanggungjawab (G)
          =================================================================== -->
     <section id="mod-log" class="module">
 
-      <div class="section-head">
-        <div class="eyebrow">Modul 3</div>
-        <h1>JSA LOG</h1>
-        <p class="desc">Riwayat seluruh JSA yang pernah disimpan. Data masuk otomatis saat JSA dikirim.</p>
+      <div class="section-head" style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+        <div>
+          <div class="eyebrow">Modul 3</div>
+          <h1>JSA LOG</h1>
+          <p class="desc">Riwayat seluruh JSA yang pernah disimpan. Data selalu diambil langsung dari Google Sheet.</p>
+        </div>
+        <!-- [BARU] tombol Refresh: muat ulang data dari spreadsheet kapan saja -->
+        <button class="btn btn-ghost btn-sm" id="log-refresh-btn" onclick="jsaLog.reload()" title="Muat ulang dari spreadsheet" style="flex-shrink:0;margin-top:2px">
+          <svg id="log-refresh-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:currentColor"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Refresh
+        </button>
       </div>
 
       <!-- Bar Pencarian & Filter -->
@@ -1762,7 +1773,6 @@ const jsaLog = (() => {
   // Tidak ada data dummy — JSA LOG mulai dari kosong
   let entries = [];
   let filteredEntries = [...entries];
-  let nextId = 1;
 
   function renderStats(list) {
     const counts = { Rendah:0, Sedang:0, Tinggi:0, Ekstrem:0 };
@@ -1830,9 +1840,13 @@ const jsaLog = (() => {
       this.reload();
     },
     async reload() {
-      const container = document.getElementById('log-list');
-      const empty = document.getElementById('log-empty');
-      if (container) container.innerHTML = '<div style="text-align:center;padding:24px;color:var(--ink-faint);font-size:13px">Memuat data…</div>';
+      const container   = document.getElementById('log-list');
+      const empty       = document.getElementById('log-empty');
+      const refreshBtn  = document.getElementById('log-refresh-btn');
+      const refreshIcon = document.getElementById('log-refresh-icon');
+      if (refreshBtn) refreshBtn.disabled = true;
+      if (refreshIcon) refreshIcon.classList.add('log-refresh-spinning');
+      if (container) container.innerHTML = '<div style="text-align:center;padding:24px;color:var(--ink-faint);font-size:13px">Memuat data dari spreadsheet…</div>';
       if (empty) empty.style.display = 'none';
       try {
         const res = await apiList();
@@ -1841,40 +1855,49 @@ const jsaLog = (() => {
         }
         // data dari sheet diurutkan lama→baru (No urut), tampilkan terbaru di atas
         entries = (res.data || []).slice().reverse();
-        filteredEntries = [...entries];
-        renderStats(entries);
-        renderList(entries);
+        // [BARU] JSA Log selalu refer ke spreadsheet — terapkan ulang
+        // filter/pencarian yang sedang aktif di atas data terbaru ini
+        this.filter();
       } catch (err) {
         console.error('[jsaLog] Gagal memuat data:', err);
-        showToast('⚠ Gagal! memuat data JSA Log');
+        showToast('⚠ Gagal memuat data JSA Log dari spreadsheet');
         entries = [];
         filteredEntries = [];
         renderStats(entries);
         renderList(entries);
+      } finally {
+        if (refreshBtn) refreshBtn.disabled = false;
+        if (refreshIcon) refreshIcon.classList.remove('log-refresh-spinning');
       }
     },
+    // addEntry: kirim data ke server (upsert — backend otomatis update
+    // kalau No. Form JSA sudah ada, atau tambah baris baru kalau belum).
+    // [BARU] tidak pernah lagi menyisipkan data secara lokal/optimis —
+    // JSA Log SELALU mengambil ulang dari spreadsheet setelah berhasil
+    // simpan, supaya tampilan di web selalu cerminan persis isi sheet.
+    // Return: { success, updated, id, error } supaya pemanggil tahu hasil
+    // sebenarnya (bukan asumsi selalu berhasil).
     async addEntry(data) {
       const { _payload, ...summary } = data;
-      let id = 'local-' + Date.now();
-      let savedOk = false;
       try {
         const res = await apiCall('add', { payload: summary });
-        if (res && res.success && res.id) {
-          id = res.id;
-          savedOk = true;
-        } else {
-          console.error('[jsaLog] Gagal simpan ke server:', res && res.error);
+        if (res && res.success) {
+          // simpan payload lengkap (detail langkah/APD) di cache lokal,
+          // di-keyed dengan id stabil (= No. Form JSA) — aman dipakai
+          // lintas reload karena id sekarang bukan lagi UUID acak
+          if (_payload && res.id) {
+            this._detailMap = this._detailMap || {};
+            this._detailMap[res.id] = _payload;
+          }
+          await this.reload();
+          return { success: true, updated: !!res.updated, id: res.id };
         }
+        console.error('[jsaLog] Gagal simpan ke server:', res && res.error);
+        return { success: false, error: (res && res.error) || 'Respons server tidak valid' };
       } catch (err) {
         console.error('[jsaLog] Gagal terhubung ke server:', err);
+        return { success: false, error: err.message || 'Gagal terhubung ke server' };
       }
-      if (!savedOk) showToast('⚠ Gagal menyimpan ke server, data tersimpan sementara di perangkat ini');
-      const entry = { id, ...summary };
-      entries.unshift(entry);
-      // simpan payload lengkap di map terpisah jika perlu detail
-      if (_payload) { this._detailMap = this._detailMap || {}; this._detailMap[id] = _payload; }
-      this.filter();
-      renderStats(filteredEntries);
     },
     _detailMap: {},
     filter() {
@@ -2971,9 +2994,11 @@ jsa.generate = function() {
   }
 
   const filename = 'JSA-' + (h.noJSA || 'baru').replace(/\//g,'-') + '.pdf';
-  jsaLogConfirm.show((updateLog) => {
+  jsaLogConfirm.show(async (updateLog) => {
     if (updateLog) {
-      jsaLog.addEntry({
+      // [BARU] tunggu hasil simpan yang sebenarnya dari server (upsert),
+      // lalu tampilkan toast sesuai hasil nyata — bukan asumsi selalu berhasil
+      const result = await jsaLog.addEntry({
         noFormJSA:       h.noJSA,
         tanggal:         h.tanggal,
         resiko:          h.resiko,
@@ -2982,7 +3007,11 @@ jsa.generate = function() {
         penanggungjawab: h.penanggungjawab,
         _payload:        payload
       });
-      showToast('✓ JSA ditambahkan ke JSA Log');
+      if (result && result.success) {
+        showToast(result.updated ? '✓ JSA Log diperbarui di spreadsheet' : '✓ JSA ditambahkan ke JSA Log');
+      } else {
+        showToast('⚠ Gagal menyimpan ke JSA Log: ' + (result && result.error ? result.error : 'tidak diketahui'));
+      }
     }
     // Susun dokumen sungguhan: data form diisi ke struktur tabel resmi sheet JSA.
     // PDF JSA selalu hanya berisi sheet JSA — sama saja isinya baik pilih
