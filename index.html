@@ -417,6 +417,13 @@ input,select,textarea{ font-family: inherit; }
   animation: shake 0.3s ease;
 }
 .field-error label { color: var(--risk-extreme) !important; }
+/* -- validasi: grid APD (bukan .field biasa) saat tidak ada APD dicentang -- */
+#jsa-apd-grid.field-error {
+  outline: 1.5px solid var(--risk-extreme);
+  outline-offset: 4px;
+  border-radius: var(--r-sm);
+  animation: shake 0.3s ease;
+}
 @keyframes shake {
   0%,100%{ transform: translateX(0); }
   20%    { transform: translateX(-4px); }
@@ -584,7 +591,7 @@ input,select,textarea{ font-family: inherit; }
           </div>
           <div class="field" style="grid-column:1/-1">
             <!-- lokasi: lokasi pekerjaan di lapangan -->
-            <label>Lokasi</label>
+            <label>Lokasi <span class="req">*</span></label>
             <input type="text" id="ibppr-lokasi" placeholder="Nama lokasi / zona / lantai" value="">
           </div>
         </div>
@@ -666,12 +673,12 @@ input,select,textarea{ font-family: inherit; }
           </div>
           <div class="field">
             <!-- pengawas: nama pengawas lapangan -->
-            <label>Pengawas</label>
+            <label>Pengawas <span class="req">*</span></label>
             <input type="text" id="jsa-pengawas" placeholder="Nama pengawas" value="">
           </div>
           <div class="field">
             <!-- namaPelaksana: nama pelaksana / pekerja utama -->
-            <label>Nama Pelaksana</label>
+            <label>Nama Pelaksana <span class="req">*</span></label>
             <div id="jsa-namaPelaksana-display" onclick="pelaksanaDialog.open()"
               style="width:100%;min-height:42px;padding:10px 12px;border-radius:var(--r-sm) var(--r-sm) 0 0;border:1.5px solid var(--line-strong);border-bottom:none;background:var(--paper-deep);font-family:var(--font-body);font-size:13.5px;color:var(--ink);cursor:pointer;line-height:1.6;word-break:break-word"
               title="Klik untuk edit nama pelaksana">
@@ -694,7 +701,7 @@ input,select,textarea{ font-family: inherit; }
         <div class="card-title-row">
           <h3>
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;stroke:var(--amber)"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-            APD yang Digunakan
+            APD yang Digunakan <span class="req">*</span>
           </h3>
         </div>
         <!-- Checklist APD standar konstruksi -->
@@ -732,12 +739,12 @@ input,select,textarea{ font-family: inherit; }
         <div class="field-grid cols-2">
           <div class="field" style="grid-column:1/-1">
             <!-- lokasi: lokasi pekerjaan, disimpan ke JSA LOG -->
-            <label>Lokasi Pekerjaan</label>
+            <label>Lokasi Pekerjaan <span class="req">*</span></label>
             <input type="text" id="jsa-lokasi" placeholder="Zona / area / lantai" value="">
           </div>
           <div class="field">
             <!-- resiko: tingkat resiko keseluruhan JSA, masuk ke JSA LOG -->
-            <label>Tingkat Resiko</label>
+            <label>Tingkat Resiko <span class="req">*</span></label>
             <select id="jsa-resiko">
               <option value="">— Pilih —</option>
               <option value="Rendah">Rendah</option>
@@ -748,7 +755,7 @@ input,select,textarea{ font-family: inherit; }
           </div>
           <div class="field">
             <!-- penanggungjawab: nama PJ pekerjaan, disimpan ke JSA LOG -->
-            <label>Penanggung Jawab</label>
+            <label>Penanggung Jawab <span class="req">*</span></label>
             <input type="text" id="jsa-penanggungjawab" placeholder="Nama PJ" value="">
           </div>
         </div>
@@ -1474,12 +1481,12 @@ const ibppr = (() => {
       <div class="field-grid" style="gap:10px">
         <div class="field">
           <!-- aktivitas: uraian aktivitas pekerjaan (col C sheet IBPPR) -->
-          <label>Aktivitas Pekerjaan</label>
+          <label>Aktivitas Pekerjaan <span class="req">*</span></label>
           <textarea rows="1" placeholder="Uraikan aktivitas pekerjaan…" oninput="ibppr.updateField(${row.id},'aktivitas',this.value)">${row.aktivitas}</textarea>
         </div>
         <div class="field">
           <!-- potensiBahaya: potensi bahaya dari aktivitas tersebut (col D) -->
-          <label>Potensi Bahaya</label>
+          <label>Potensi Bahaya <span class="req">*</span></label>
           <textarea rows="1" placeholder="Deskripsikan potensi bahaya…" oninput="ibppr.updateField(${row.id},'potensiBahaya',this.value)">${row.potensiBahaya}</textarea>
         </div>
         <!-- Penilaian Resiko (cols E:J): Akibat × Peluang → Nilai → Tingkat -->
@@ -1488,17 +1495,17 @@ const ibppr = (() => {
           <div class="field-grid cols-2" style="gap:8px">
             <div class="field" style="grid-column:1/-1">
               <!-- resikoAwal: deskripsi resiko awal sebelum pengendalian (col E, teks bebas) -->
-              <label>Resiko</label>
+              <label>Resiko <span class="req">*</span></label>
               <textarea rows="1" placeholder="Contoh: Resiko tertimpa, terjatuh, terpapar bahan kimia…" oninput="ibppr.updateField(${row.id},'resikoAwal',this.value)">${row.resikoAwal}</textarea>
             </div>
             <div class="field" style="grid-column:1/-1">
               <!-- akibat: deskripsi akibat/dampak dari bahaya (col F, teks bebas) -->
-              <label>Akibat / Dampak</label>
+              <label>Akibat / Dampak <span class="req">*</span></label>
               <textarea rows="1" placeholder="Contoh: Cedera pekerja, luka bakar, ISPA…" oninput="ibppr.updateField(${row.id},'akibat',this.value)">${row.akibat}</textarea>
             </div>
             <div class="field">
               <!-- paparan: tingkat keparahan/dampak bahaya, bukan frekuensi waktu (1-5, col G) -->
-              <label>Paparan (1–5)</label>
+              <label>Paparan (1–5) <span class="req">*</span></label>
               <select oninput="ibppr.updatePenilaian(${row.id},'paparan',this.value)">
                 <option value="">—</option>
                 ${[1,2,3,4,5].map(n=>`<option value="${n}" ${row.paparan==n?'selected':''}>${n} – ${['Sangat Ringan','Ringan','Sedang','Berat','Sangat Fatal'][n-1]}</option>`).join('')}
@@ -1506,7 +1513,7 @@ const ibppr = (() => {
             </div>
             <div class="field">
               <!-- peluang: kemungkinan kejadian bahaya (1-5, col H) -->
-              <label>Peluang (1–5)</label>
+              <label>Peluang (1–5) <span class="req">*</span></label>
               <select oninput="ibppr.updatePenilaian(${row.id},'peluang',this.value)">
                 <option value="">—</option>
                 ${[1,2,3,4,5].map(n=>`<option value="${n}" ${row.peluang==n?'selected':''}>${n} – ${['Hampir mustahil','Jarang terjadi','Mungkin','Kemungkinan besar','Hampir pasti'][n-1]}</option>`).join('')}
@@ -1522,7 +1529,7 @@ const ibppr = (() => {
         </div>
         <div class="field">
           <!-- pengendalian: upaya pengendalian resiko (col K) -->
-          <label>Pengendalian Resiko</label>
+          <label>Pengendalian Resiko <span class="req">*</span></label>
           <textarea rows="1" placeholder="Langkah pengendalian / mitigasi…" oninput="ibppr.updateField(${row.id},'pengendalian',this.value)">${row.pengendalian}</textarea>
         </div>
       </div>
@@ -1658,17 +1665,17 @@ const jsa = (() => {
       <div class="field-grid" style="gap:10px">
         <div class="field">
           <!-- urutanPekerjaan: uraian langkah pekerjaan (col B, sheet JSA) -->
-          <label>Urutan Pekerjaan</label>
+          <label>Urutan Pekerjaan <span class="req">*</span></label>
           <textarea rows="1" placeholder="Uraikan langkah pekerjaan ini…" oninput="jsa.updateStep(${step.id},'urutanPekerjaan',this.value)">${step.urutanPekerjaan}</textarea>
         </div>
         <div class="field">
           <!-- potensiBahaya: potensi bahaya pada langkah ini (col C:E, sheet JSA) -->
-          <label>Potensi Bahaya</label>
+          <label>Potensi Bahaya <span class="req">*</span></label>
           <textarea rows="1" placeholder="Potensi bahaya pada langkah ini…" oninput="jsa.updateStep(${step.id},'potensiBahaya',this.value)">${step.potensiBahaya}</textarea>
         </div>
         <div class="field">
           <!-- upayaPengendalian: upaya pengendalian bahaya (col F:H, sheet JSA) -->
-          <label>Upaya Pengendalian</label>
+          <label>Upaya Pengendalian <span class="req">*</span></label>
           <textarea rows="1" placeholder="Langkah mitigasi / pengendalian…" oninput="jsa.updateStep(${step.id},'upayaPengendalian',this.value)">${step.upayaPengendalian}</textarea>
         </div>
       </div>
@@ -3036,32 +3043,39 @@ ibppr._loadRowsFromDraft = function(baris) {
 /* =========================================================================
    VALIDASI FORM — tandai field kosong dengan border merah + scroll otomatis
    ========================================================================= */
-function markFieldError(el) {
-  const fieldDiv = el.closest('.field');
-  if (!fieldDiv) return;
+function markFieldError(el, markEl) {
+  const target = markEl || el;
+  const fieldDiv = target.closest('.field') || target;
   fieldDiv.classList.add('field-error');
   const clear = () => {
     fieldDiv.classList.remove('field-error');
     el.removeEventListener('input', clear);
     el.removeEventListener('change', clear);
+    el.removeEventListener('click', clear);
   };
   el.addEventListener('input', clear);
   el.addEventListener('change', clear);
+  el.addEventListener('click', clear);
 }
 
 function clearAllErrors(scope) {
   scope.querySelectorAll('.field-error').forEach(f => f.classList.remove('field-error'));
 }
 
+// checks: array of { el, markEl?, isValid? }
+//   el      -> elemen sumber nilai (boleh hidden input / checkbox grup)
+//   markEl  -> elemen yang ditandai merah & di-scroll (default: el)
+//   isValid -> fungsi custom (el) => boolean; default: el.value tidak kosong
 function validateFields(checks) {
   let firstInvalidEl = null;
   let valid = true;
-  checks.forEach(({ el }) => {
+  checks.forEach(({ el, markEl, isValid }) => {
     if (!el) return;
-    if (!el.value || !el.value.trim()) {
+    const ok = isValid ? isValid(el) : !!(el.value && el.value.trim());
+    if (!ok) {
       valid = false;
-      markFieldError(el);
-      if (!firstInvalidEl) firstInvalidEl = el;
+      markFieldError(el, markEl);
+      if (!firstInvalidEl) firstInvalidEl = markEl || el;
     }
   });
   return { valid, firstInvalidEl };
@@ -3133,13 +3147,41 @@ jsa.generate = function() {
   clearAllErrors(scope);
 
   // Kumpulkan semua input text, date, dan textarea dalam modul JSA
+  // (apdTambahan dikecualikan karena memang opsional/bebas)
   const els = [...scope.querySelectorAll('input[type="text"], input[type="date"], textarea, select')]
-    .filter(el => el.id !== 'jsa-apdTambahan');
+    .filter(el => el.id !== 'jsa-apdTambahan' && el.id !== 'jsa-namaPelaksana');
   const checks = els.map(el => ({ el }));
-  const { valid, firstInvalidEl } = validateFields(checks);
+
+  // APD: minimal 1 item harus dicentang
+  const apdGrid = document.getElementById('jsa-apd-grid');
+  const apdCheckboxes = [...scope.querySelectorAll('#jsa-apd-grid input[type="checkbox"]')];
+  const apdHasChecked = () => apdCheckboxes.some(cb => cb.checked);
+  if (!apdHasChecked()) {
+    apdGrid.classList.add('field-error');
+    const clearApdError = () => {
+      if (apdHasChecked()) {
+        apdGrid.classList.remove('field-error');
+        apdCheckboxes.forEach(cb => cb.removeEventListener('change', clearApdError));
+      }
+    };
+    apdCheckboxes.forEach(cb => cb.addEventListener('change', clearApdError));
+  }
+
+  // namaPelaksana: input hidden, ditandai lewat kotak display yang terlihat
+  const namaPelaksanaEl = document.getElementById('jsa-namaPelaksana');
+  const namaPelaksanaDisplay = document.getElementById('jsa-namaPelaksana-display');
+  checks.push({
+    el: namaPelaksanaEl,
+    markEl: namaPelaksanaDisplay,
+    isValid: el => !!(el.value && el.value.trim())
+  });
+
+  const { valid: validFields, firstInvalidEl: firstInvalidField } = validateFields(checks);
+  const valid = validFields && apdHasChecked();
+  const firstInvalidEl = !apdHasChecked() ? apdGrid : firstInvalidField;
 
   if (!valid) {
-    showToast('⚠ Lengkapi field yang ditandai merah terlebih dahulu');
+    showToast('⚠ Lengkapi field yang ditandai merah terlebih dahulu' + (!apdHasChecked() ? ' (pilih minimal 1 APD)' : ''));
     scrollToFirstError(firstInvalidEl);
     return;
   }
