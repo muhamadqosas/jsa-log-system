@@ -1524,6 +1524,14 @@ const ibppr = (() => {
       rows = [{ id: nextId++, seq: 1, aktivitas:'', potensiBahaya:'', resikoAwal:'', akibat:'', paparan:'', peluang:'', pengendalian:'' }];
       render();
     },
+    // clearRows: kosongkan array baris internal + DOM tanpa menambah baris
+    // kosong default. Dipakai sebelum restore session, supaya addRow()
+    // berikutnya tidak menumpuk di atas baris kosong sisa init().
+    clearRows() {
+      rows = [];
+      const container = document.getElementById('ibppr-rows-container');
+      if (container) container.innerHTML = '';
+    },
     addRow() {
       rows.push({ id: nextId++, seq: rows.length + 1, aktivitas:'', potensiBahaya:'', resikoAwal:'', akibat:'', paparan:'', peluang:'', pengendalian:'' });
       render();
@@ -1674,6 +1682,14 @@ const jsa = (() => {
       steps = [{ id: nextId++, seq: 1, urutanPekerjaan:'', potensiBahaya:'', upayaPengendalian:'' }];
       render();
       renderAPD();
+    },
+    // clearSteps: kosongkan array langkah internal + DOM tanpa menambah
+    // langkah kosong default. Dipakai sebelum restore session, supaya
+    // addStep() berikutnya tidak menumpuk di atas langkah kosong sisa init().
+    clearSteps() {
+      steps = [];
+      const container = document.getElementById('jsa-steps-container');
+      if (container) container.innerHTML = '';
     },
     addStep() {
       steps.push({ id: nextId++, seq: steps.length + 1, urutanPekerjaan:'', potensiBahaya:'', upayaPengendalian:'' });
@@ -3207,7 +3223,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const baris = this._draftData || [];
     if (!baris.length) return;
     const container = document.getElementById('ibppr-rows-container');
-    container.innerHTML = '';
+    ibppr.clearRows();
     let delay = 0;
     baris.forEach((b) => {
       setTimeout(() => {
@@ -3237,7 +3253,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const langkah = this._draftLangkah || [];
     if (!langkah.length) return;
     const container = document.getElementById('jsa-steps-container');
-    container.innerHTML = '';
+    jsa.clearSteps();
     let delay = 0;
     langkah.forEach((l) => {
       setTimeout(() => {
@@ -3280,7 +3296,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. IBPPR baris (jika ada data tersimpan & berbeda dari dummy)
     if (sess.ibpprBaris && sess.ibpprBaris.length) {
       const container = document.getElementById('ibppr-rows-container');
-      container.innerHTML = '';
+      ibppr.clearRows();
       sess.ibpprBaris.forEach((b, idx) => {
         ibppr.addRow();
         setTimeout(() => {
@@ -3321,7 +3337,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 6. JSA langkah
     if (sess.jsaLangkah && sess.jsaLangkah.length) {
       const container = document.getElementById('jsa-steps-container');
-      container.innerHTML = '';
+      jsa.clearSteps();
       sess.jsaLangkah.forEach((l, idx) => {
         jsa.addStep();
         setTimeout(() => {
