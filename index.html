@@ -2634,9 +2634,37 @@ const generateModal = (() => {
     if (bar) bar.style.transition = 'width 0.4s ease';
   }
 
+  // [BARU] finishUploadingPulse: hentikan denyut upload dan TUNTASKAN bar
+  // ke 100% terlebih dahulu (bukan langsung reset ke 0%), supaya transisi
+  // ke fase "Generating…" terasa berkelanjutan/maju, bukan mundur dulu
+  // baru maju lagi. Mengembalikan Promise yang resolve setelah animasi
+  // "tuntas 100%" selesai, sehingga open() bisa dipanggil setelahnya.
+  function finishUploadingPulse() {
+    return new Promise((resolve) => {
+      stopUploadingPulse();
+      const bar = document.getElementById('gen-progress-bar');
+      const pctEl = document.getElementById('gen-pct');
+      if (!bar) { resolve(); return; }
+      bar.style.transition = 'width 0.35s ease';
+      bar.style.width = '100%';
+      if (pctEl) pctEl.textContent = '';
+      const stepLabelEl = document.getElementById('gen-step-label');
+      if (stepLabelEl) { stepLabelEl.style.opacity = '1'; stepLabelEl.textContent = 'Data tersimpan…'; }
+      // beri waktu agar bar benar-benar terlihat penuh sebelum direset
+      setTimeout(resolve, 380);
+    });
+  }
+
   let _modulLabel = '';
-  function open(modulLabel, filename, docHTML) {
-    stopUploadingPulse(); // [BARU] pastikan animasi denyut upload dihentikan sebelum animasi generate dimulai
+  async function open(modulLabel, filename, docHTML) {
+    // [DIUBAH] jika sebelumnya ada animasi pulsa upload yang masih berjalan,
+    // tuntaskan dulu sampai 100% supaya transisi ke fase generate berikutnya
+    // terlihat maju terus (bukan mundur lalu maju lagi).
+    if (_uploadPulseTimer) {
+      await finishUploadingPulse();
+    } else {
+      stopUploadingPulse();
+    }
     _baseName = (filename || 'dokumen.pdf').replace(/\.(pdf|html)$/i, '');
     _docHTML  = docHTML || null;
     _modulLabel = modulLabel || '';
@@ -2644,7 +2672,15 @@ const generateModal = (() => {
 
     document.getElementById('gen-title').textContent      = 'Generating…';
     document.getElementById('gen-subtitle').textContent   = 'Menyusun dokumen ' + modulLabel;
-    document.getElementById('gen-progress-bar').style.width = '0%';
+    const bar = document.getElementById('gen-progress-bar');
+    // [DIUBAH] reset ke 0% tanpa transisi (instan) tepat sebelum fase baru
+    // dimulai, supaya tidak terlihat sebagai animasi "mundur" yang sempat
+    // terlihat oleh mata — bar baru "muncul" kosong lalu langsung maju lagi.
+    bar.style.transition = 'none';
+    bar.style.width = '0%';
+    // force reflow supaya transition:none benar-benar diterapkan dulu
+    void bar.offsetWidth;
+    bar.style.transition = 'width 0.4s ease-in-out';
     document.getElementById('gen-pct').textContent        = '0%';
     const stepLabelEl = document.getElementById('gen-step-label');
     if (stepLabelEl) { stepLabelEl.style.opacity = '1'; stepLabelEl.textContent = steps[0]; }
