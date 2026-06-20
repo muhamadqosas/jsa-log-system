@@ -2643,15 +2643,21 @@ const generateModal = (() => {
     });
 
     const bar = document.getElementById('gen-progress-bar');
-    bar.style.transition = 'width 0.9s ease-in-out';
-    let pct = 14, dir = 1;
+    // [DIUBAH] animasi loading SEARAH SAJA (tidak pernah mundur) selama
+    // menunggu durasi upload yang tidak diketahui: bar naik terus mendekati
+    // 92% dengan langkah yang makin mengecil (mirip pola "indeterminate"
+    // umum), lalu DITAHAN di situ sampai upload sungguhan selesai dan
+    // finishUploadingPulse() menuntaskannya ke 100%. Tidak ada lagi
+    // pengurangan width di titik manapun.
+    bar.style.transition = 'width 0.6s ease-out';
+    let pct = 10;
     bar.style.width = pct + '%';
     _uploadPulseTimer = setInterval(() => {
-      pct += dir * 16;
-      if (pct >= 80) { pct = 80; dir = -1; }
-      if (pct <= 14) { pct = 14; dir = 1; }
+      const remaining = 92 - pct;
+      if (remaining <= 0.5) return; // sudah mentok di plafon, tahan di sana
+      pct += remaining * 0.18; // makin dekat plafon, makin kecil langkahnya
       bar.style.width = pct + '%';
-    }, 650);
+    }, 550);
   }
 
   function stopUploadingPulse() {
